@@ -348,7 +348,7 @@
       <div class="cloud one" aria-hidden="true"></div>
       <div class="cloud two" aria-hidden="true"></div>
       <div class="cave-ceiling" aria-hidden="true"></div>
-      <div class="score" aria-live="polite">Coins: <span id="score">0</span>/5</div>
+      <div class="score" aria-live="polite">Coins: <span id="score">0</span>/5 · Lives: <span id="lives">3</span></div>
       <div class="platform one" aria-label="Platform"></div>
       <div class="platform two" aria-label="Platform"></div>
       <div class="platform three" aria-label="Platform"></div>
@@ -364,7 +364,7 @@
       <div class="ground" aria-label="Ground"></div>
       <div class="win-screen" id="win-screen">
         <div class="win-card">
-          <h1>YOU WIN!</h1>
+          <h1 id="result-title">YOU WIN!</h1>
           <button class="play-again" id="play-again">Play Again</button>
         </div>
       </div>
@@ -377,9 +377,11 @@
       const platforms = [...document.querySelectorAll('.platform')];
       const coins = [...document.querySelectorAll('.coin')];
       const scoreDisplay = document.querySelector('#score');
+      const livesDisplay = document.querySelector('#lives');
       const flag = document.querySelector('.flag');
       const enemy = document.querySelector('.enemy');
       const winScreen = document.querySelector('#win-screen');
+      const resultTitle = document.querySelector('#result-title');
       const playAgain = document.querySelector('#play-again');
       const modeButtons = [...document.querySelectorAll('.mode-button')];
       const speed = 5;
@@ -389,7 +391,45 @@
       let heroY = 0;
       let verticalSpeed = 0;
       let score = 0;
+      let lives = 3;
       let won = false;
+      let gameOver = false;
+
+      function resetGameToLevelOne() {
+        level = 1;
+        scene.classList.remove('level-two', 'level-three');
+        heroX = scene.clientWidth / 2;
+        heroY = 0;
+        verticalSpeed = 0;
+        score = 0;
+        scoreDisplay.textContent = score;
+        lives = 3;
+        livesDisplay.textContent = lives;
+        coins.forEach((coin) => { coin.hidden = false; });
+        won = false;
+        gameOver = false;
+        resultTitle.textContent = 'YOU WIN!';
+        playAgain.style.display = 'block';
+        winScreen.classList.remove('visible');
+      }
+
+      function loseLife() {
+        if (gameOver) return;
+        lives -= 1;
+        livesDisplay.textContent = lives;
+        if (lives <= 0) {
+          gameOver = true;
+          won = true;
+          resultTitle.textContent = 'GAME OVER';
+          playAgain.style.display = 'none';
+          winScreen.classList.add('visible');
+          setTimeout(resetGameToLevelOne, 1500);
+          return;
+        }
+        heroX = level === 1 ? scene.clientWidth / 2 : scene.clientWidth * 0.08;
+        heroY = 0;
+        verticalSpeed = 0;
+      }
       let level = 1;
       let enemyX = 0;
       let enemyDirection = 1;
@@ -440,6 +480,8 @@
             coins.forEach((coin) => { coin.hidden = false; });
             score = 0;
             scoreDisplay.textContent = score;
+            lives = 3;
+            livesDisplay.textContent = lives;
           } else {
             won = true;
             winScreen.classList.add('visible');
@@ -469,9 +511,7 @@
         const enemyRect = enemy.getBoundingClientRect();
         if (heroRect.left < enemyRect.right && heroRect.right > enemyRect.left &&
             heroRect.top < enemyRect.bottom && heroRect.bottom > enemyRect.top) {
-          heroX = scene.clientWidth * 0.08;
-          heroY = 0;
-          verticalSpeed = 0;
+          loseLife();
         }
       }
 
@@ -535,16 +575,7 @@
       window.addEventListener('keyup', (event) => heldKeys.delete(event.key));
       window.addEventListener('resize', keepHeroOnScreen);
       playAgain.addEventListener('click', () => {
-        level = 1;
-        scene.classList.remove('level-two');
-        heroX = scene.clientWidth / 2;
-        heroY = 0;
-        verticalSpeed = 0;
-        score = 0;
-        scoreDisplay.textContent = score;
-        coins.forEach((coin) => { coin.hidden = false; });
-        won = false;
-        winScreen.classList.remove('visible');
+        resetGameToLevelOne();
         keepHeroOnScreen();
       });
       keepHeroOnScreen();
