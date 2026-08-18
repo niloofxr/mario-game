@@ -35,6 +35,50 @@
         background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 74%);
       }
 
+      .scene.arcade {
+        --sky-top: #ff9950;
+        --sky-bottom: #ffd36b;
+        --ground: #9b38b8;
+        --ground-edge: #552072;
+      }
+
+      .scene.dark {
+        --sky-top: #111b3b;
+        --sky-bottom: #29345d;
+        --ground: #263c35;
+        --ground-edge: #14251f;
+      }
+
+      .mode-menu {
+        position: absolute;
+        z-index: 4;
+        top: 18px;
+        left: 22px;
+        display: flex;
+        gap: 5px;
+        padding: 5px;
+        border-radius: 7px;
+        background: rgba(79, 45, 24, .72);
+      }
+
+      .mode-button {
+        padding: 6px 9px;
+        border: 0;
+        border-radius: 4px;
+        color: #fff;
+        background: transparent;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .mode-button.active, .mode-button:hover { background: #e8493f; }
+
+      .dark .cloud { opacity: .2; }
+      .dark .platform { background: #456b62; border-color: #1b302a; }
+      .dark .score, .dark .mode-menu { background: rgba(5, 10, 25, .8); }
+
       /* Simple static clouds add atmosphere without introducing animation. */
       .cloud {
         position: absolute;
@@ -187,6 +231,11 @@
   </head>
   <body>
     <main class="scene" aria-label="Static platform game scene">
+      <nav class="mode-menu" aria-label="Game modes">
+        <button class="mode-button active" data-mode="classic">Classic</button>
+        <button class="mode-button" data-mode="arcade">Arcade</button>
+        <button class="mode-button" data-mode="dark">Dark</button>
+      </nav>
       <div class="cloud one" aria-hidden="true"></div>
       <div class="cloud two" aria-hidden="true"></div>
       <div class="score" aria-live="polite">Coins: <span id="score">0</span>/5</div>
@@ -219,6 +268,7 @@
       const flag = document.querySelector('.flag');
       const winScreen = document.querySelector('#win-screen');
       const playAgain = document.querySelector('#play-again');
+      const modeButtons = [...document.querySelectorAll('.mode-button')];
       const speed = 5;
       const jumpStrength = 13;
       const gravity = 0.6;
@@ -227,6 +277,14 @@
       let verticalSpeed = 0;
       let score = 0;
       let won = false;
+
+      modeButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          scene.classList.remove('arcade', 'dark');
+          if (button.dataset.mode !== 'classic') scene.classList.add(button.dataset.mode);
+          modeButtons.forEach((item) => item.classList.toggle('active', item === button));
+        });
+      });
       const heldKeys = new Set();
 
       function keepHeroOnScreen() {
