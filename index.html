@@ -285,12 +285,48 @@
         left: 50%;
         width: 34px;
         height: 42px;
-        border: 3px solid #8b251e;
-        border-radius: 4px 4px 2px 2px;
-        background: #e8493f;
+        border: 3px solid #123b73;
+        border-radius: 7px 7px 3px 3px;
+        background: linear-gradient(90deg, #f4f4f4 0 18%, #1464b4 18% 82%, #f4f4f4 82%);
         transform: translateX(-50%);
         will-change: left;
       }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: -17px;
+        left: 5px;
+        width: 18px;
+        height: 18px;
+        border: 3px solid #713b25;
+        border-radius: 50%;
+        background: #c9825b;
+        box-shadow: none;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        right: -13px;
+        bottom: -2px;
+        width: 13px;
+        height: 13px;
+        border: 2px solid #7d3b13;
+        border-radius: 50%;
+        background: #ef8b21;
+        box-shadow: inset 3px 0 #b94d16;
+      }
+
+      .hero-number {
+        position: absolute;
+        top: 8px;
+        left: 11px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
     </style>
   </head>
   <body>
@@ -313,7 +349,7 @@
       <div class="coin three" aria-label="Gold coin"></div>
       <div class="coin four" aria-label="Gold coin"></div>
       <div class="coin five" aria-label="Gold coin"></div>
-      <div class="hero" aria-label="Hero"></div>
+      <div class="hero" aria-label="Basketball player"><span class="hero-number">5</span></div>
       <div class="enemy" aria-label="Enemy"></div>
       <div class="flag" aria-label="Finish flag"></div>
       <div class="ground" aria-label="Ground"></div>
