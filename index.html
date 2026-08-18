@@ -92,7 +92,7 @@
         background: #a92f43;
       }
 
-      .level-two .enemy { display: block; bottom: calc(33% + 16px); left: 59%; }
+      .level-two .enemy { display: block; bottom: calc(33% + 16px); }
 
       .mode-menu {
         position: absolute;
@@ -327,7 +327,7 @@
       let score = 0;
       let won = false;
       let level = 1;
-      let enemyX = 59;
+      let enemyX = 0;
       let enemyDirection = 1;
 
       modeButtons.forEach((button) => {
@@ -385,9 +385,22 @@
 
       function moveEnemy() {
         if (level !== 2) return;
-        enemyX += enemyDirection * 0.12;
-        if (enemyX > 68 || enemyX < 55) enemyDirection *= -1;
-        enemy.style.left = `${enemyX}%`;
+        const sceneRect = scene.getBoundingClientRect();
+        const platformRect = platforms[2].getBoundingClientRect();
+        const platformLeft = platformRect.left - sceneRect.left;
+        const platformRight = platformRect.right - sceneRect.left;
+        const minX = platformLeft + 2;
+        const maxX = platformRight - enemy.offsetWidth - 2;
+        if (enemyX === 0) enemyX = minX;
+        enemyX += enemyDirection * 1.5;
+        if (enemyX >= maxX) {
+          enemyX = maxX;
+          enemyDirection = -1;
+        } else if (enemyX <= minX) {
+          enemyX = minX;
+          enemyDirection = 1;
+        }
+        enemy.style.left = `${enemyX}px`;
         const heroRect = hero.getBoundingClientRect();
         const enemyRect = enemy.getBoundingClientRect();
         if (heroRect.left < enemyRect.right && heroRect.right > enemyRect.left &&
