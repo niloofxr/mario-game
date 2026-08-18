@@ -36,10 +36,10 @@
       }
 
       .scene.arcade {
-        --sky-top: #ff9950;
-        --sky-bottom: #ffd36b;
-        --ground: #9b38b8;
-        --ground-edge: #552072;
+        --sky-top: #120d3d;
+        --sky-bottom: #30176b;
+        --ground: #19e6b5;
+        --ground-edge: #087d86;
       }
 
       .scene.dark {
@@ -55,6 +55,25 @@
         --ground: #d94820;
         --ground-edge: #7c1d1d;
         background: linear-gradient(180deg, var(--sky-top), var(--sky-bottom) 78%);
+      }
+
+      .scene.level-two.arcade {
+        --sky-top: #21002f;
+        --sky-bottom: #64104f;
+        --ground: #ff3da8;
+        --ground-edge: #8c176e;
+      }
+
+      .arcade .platform { border-color: #ffec3d; background: #9b4dff; box-shadow: 0 0 10px #ffec3d; }
+      .arcade .hero { border-color: #ffec3d; background: #ff3da8; box-shadow: 0 0 12px #ff3da8; }
+      .arcade .coin { border-color: #ffec3d; background: #fff34d; box-shadow: 0 0 10px #fff34d; }
+      .arcade .flag::before { background: #39ff5a; }
+
+      .scene.level-two.dark {
+        --sky-top: #090812;
+        --sky-bottom: #241125;
+        --ground: #6d201c;
+        --ground-edge: #310e18;
       }
 
       .cave-ceiling {
