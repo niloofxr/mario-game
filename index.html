@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mario Game Scene</title>
+    <style>
+      :root {
+        --sky-top: #65c9f3;
+        --sky-bottom: #bceeff;
+        --ground: #45a834;
+        --ground-edge: #267923;
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      body {
+        background: var(--sky-bottom);
+        font-family: system-ui, sans-serif;
+      }
+
+      .scene {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 320px;
+        overflow: hidden;
+        background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 74%);
+      }
+
+      /* Simple static clouds add atmosphere without introducing animation. */
+      .cloud {
+        position: absolute;
+        width: 150px;
+        height: 34px;
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.82);
+      }
+
+      .cloud::before, .cloud::after {
+        content: "";
+        position: absolute;
+        bottom: 8px;
+        border-radius: 50%;
+        background: inherit;
+      }
+
+      .cloud::before { left: 25px; width: 54px; height: 54px; }
+      .cloud::after { right: 24px; width: 43px; height: 43px; }
+
+      .cloud.one { top: 16%; left: 12%; transform: scale(.9); }
+      .cloud.two { top: 27%; right: 14%; transform: scale(1.15); opacity: .7; }
+
+      .ground {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 19%;
+        min-height: 88px;
+        background: var(--ground);
+        border-top: 9px solid var(--ground-edge);
+      }
+
+      .platform {
+        position: absolute;
+        z-index: 1;
+        width: 150px;
+        height: 16px;
+        border: 3px solid #7a431c;
+        border-radius: 3px;
+        background: #b86b2d;
+      }
+
+      .platform.one { bottom: 29%; left: 24%; }
+      .platform.two { bottom: 40%; left: 43%; width: 130px; }
+      .platform.three { bottom: 51%; left: 62%; width: 115px; }
+
+      .coin {
+        position: absolute;
+        z-index: 2;
+        width: 22px;
+        height: 22px;
+        border: 3px solid #c98200;
+        border-radius: 50%;
+        background: #ffd447;
+        box-shadow: inset 3px 0 #fff09a;
+      }
+
+      .coin.one { bottom: 34%; left: 28%; }
+      .coin.two { bottom: 48%; left: 57%; }
+      .coin.three { bottom: 61%; right: 24%; }
+      .coin.four { bottom: 25%; left: 68%; }
+      .coin.five { bottom: 44%; left: 39%; }
+
+      .score {
+        position: absolute;
+        z-index: 3;
+        top: 18px;
+        right: 22px;
+        padding: 8px 14px;
+        border: 3px solid rgba(120, 65, 28, .8);
+        border-radius: 6px;
+        color: #fff;
+        background: rgba(79, 45, 24, .72);
+        font-weight: 800;
+        letter-spacing: .04em;
+      }
+
+      .flag {
+        position: absolute;
+        right: 7%;
+        bottom: max(19%, 88px);
+        z-index: 1;
+        width: 7px;
+        height: 125px;
+        border-radius: 4px;
+        background: #eee;
+        box-shadow: 2px 0 #aaa;
+      }
+
+      .flag::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: 5px;
+        width: 58px;
+        height: 38px;
+        background: #ef3d43;
+        clip-path: polygon(0 0, 100% 0, 76% 50%, 100% 100%, 0 100%);
+      }
+
+      .win-screen {
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        display: none;
+        place-items: center;
+        background: rgba(20, 34, 55, .58);
+      }
+
+      .win-screen.visible { display: grid; }
+
+      .win-card {
+        padding: 30px 44px;
+        border: 5px solid #7a431c;
+        border-radius: 12px;
+        text-align: center;
+        background: #fff8d8;
+        box-shadow: 0 8px 0 rgba(52, 30, 16, .35);
+      }
+
+      .win-card h1 { margin: 0 0 18px; color: #e33f38; font-size: 42px; }
+
+      .play-again {
+        padding: 10px 18px;
+        border: 0;
+        border-radius: 6px;
+        color: #fff;
+        background: #45a834;
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .hero {
+        position: absolute;
+        z-index: 1;
+        bottom: max(19%, 88px);
+        left: 50%;
+        width: 34px;
+        height: 42px;
+        border: 3px solid #8b251e;
+        border-radius: 4px 4px 2px 2px;
+        background: #e8493f;
+        transform: translateX(-50%);
+        will-change: left;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="scene" aria-label="Static platform game scene">
+      <div class="cloud one" aria-hidden="true"></div>
+      <div class="cloud two" aria-hidden="true"></div>
+      <div class="score" aria-live="polite">Coins: <span id="score">0</span>/5</div>
+      <div class="platform one" aria-label="Platform"></div>
+      <div class="platform two" aria-label="Platform"></div>
+      <div class="platform three" aria-label="Platform"></div>
+      <div class="coin one" aria-label="Gold coin"></div>
+      <div class="coin two" aria-label="Gold coin"></div>
+      <div class="coin three" aria-label="Gold coin"></div>
+      <div class="coin four" aria-label="Gold coin"></div>
+      <div class="coin five" aria-label="Gold coin"></div>
+      <div class="hero" aria-label="Hero"></div>
+      <div class="flag" aria-label="Finish flag"></div>
+      <div class="ground" aria-label="Ground"></div>
+      <div class="win-screen" id="win-screen">
+        <div class="win-card">
+          <h1>YOU WIN!</h1>
+          <button class="play-again" id="play-again">Play Again</button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const scene = document.querySelector('.scene');
+      const hero = document.querySelector('.hero');
+      const ground = document.querySelector('.ground');
+      const platforms = [...document.querySelectorAll('.platform')];
+      const coins = [...document.querySelectorAll('.coin')];
+      const scoreDisplay = document.querySelector('#score');
+      const flag = document.querySelector('.flag');
+      const winScreen = document.querySelector('#win-screen');
+      const playAgain = document.querySelector('#play-again');
+      const speed = 5;
+      const jumpStrength = 13;
+      const gravity = 0.6;
+      let heroX = scene.clientWidth / 2;
+      let heroY = 0;
+      let verticalSpeed = 0;
+      let score = 0;
+      let won = false;
+      const heldKeys = new Set();
+
+      function keepHeroOnScreen() {
+        const halfWidth = hero.offsetWidth / 2;
+        heroX = Math.max(halfWidth, Math.min(scene.clientWidth - halfWidth, heroX));
+        hero.style.left = `${heroX}px`;
+      }
+
+      function collectCoins() {
+        const heroRect = hero.getBoundingClientRect();
+        coins.forEach((coin) => {
+          if (coin.hidden) return;
+          const coinRect = coin.getBoundingClientRect();
+          const touching = heroRect.left < coinRect.right &&
+            heroRect.right > coinRect.left &&
+            heroRect.top < coinRect.bottom &&
+            heroRect.bottom > coinRect.top;
+          if (touching) {
+            coin.hidden = true;
+            score += 1;
+            scoreDisplay.textContent = score;
+          }
+        });
+      }
+
+      function checkFinish() {
+        const heroRect = hero.getBoundingClientRect();
+        const flagRect = flag.getBoundingClientRect();
+        if (!won && heroRect.right > flagRect.left && heroRect.left < flagRect.right &&
+            heroRect.bottom > flagRect.top && heroRect.top < flagRect.bottom) {
+          won = true;
+          winScreen.classList.add('visible');
+        }
+      }
+
+      function moveHero() {
+        const previousHeroY = heroY;
+        if (heldKeys.has('ArrowLeft')) heroX -= speed;
+        if (heldKeys.has('ArrowRight')) heroX += speed;
+
+        verticalSpeed -= gravity;
+        heroY += verticalSpeed;
+
+        const sceneRect = scene.getBoundingClientRect();
+        const groundTop = ground.getBoundingClientRect().top - sceneRect.top;
+        const heroWidth = hero.offsetWidth;
+        const heroHeight = hero.offsetHeight;
+        const heroLeft = heroX - heroWidth / 2;
+        const heroRight = heroX + heroWidth / 2;
+        const previousBottom = groundTop - previousHeroY;
+        const currentBottom = groundTop - heroY;
+        let landingY = 0;
+
+        if (verticalSpeed <= 0) {
+          for (const platform of platforms) {
+            const platformRect = platform.getBoundingClientRect();
+            const platformLeft = platformRect.left - sceneRect.left;
+            const platformRight = platformRect.right - sceneRect.left;
+            const platformTop = platformRect.top - sceneRect.top;
+            if (heroRight > platformLeft && heroLeft < platformRight &&
+                previousBottom <= platformTop && currentBottom >= platformTop) {
+              landingY = groundTop - platformTop;
+              break;
+            }
+          }
+        }
+
+        if (heroY <= landingY) {
+          heroY = landingY;
+          verticalSpeed = 0;
+        }
+
+        keepHeroOnScreen();
+        hero.style.transform = `translate(-50%, ${heroY * -1}px)`;
+        collectCoins();
+        checkFinish();
+        requestAnimationFrame(moveHero);
+      }
+
+      window.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+          event.preventDefault();
+          heldKeys.add(event.key);
+        }
+        if (event.code === 'Space' && !event.repeat && verticalSpeed === 0) {
+          event.preventDefault();
+          verticalSpeed = jumpStrength;
+        }
+      });
+
+      window.addEventListener('keyup', (event) => heldKeys.delete(event.key));
+      window.addEventListener('resize', keepHeroOnScreen);
+      playAgain.addEventListener('click', () => {
+        heroX = scene.clientWidth / 2;
+        heroY = 0;
+        verticalSpeed = 0;
+        score = 0;
+        scoreDisplay.textContent = score;
+        coins.forEach((coin) => { coin.hidden = false; });
+        won = false;
+        winScreen.classList.remove('visible');
+        keepHeroOnScreen();
+      });
+      keepHeroOnScreen();
+      moveHero();
+    </script>
+  </body>
+</html>
