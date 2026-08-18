@@ -318,6 +318,15 @@
         box-shadow: inset 3px 0 #b94d16;
       }
 
+      .hero.walking::after {
+        animation: dribble .28s ease-in-out infinite alternate;
+      }
+
+      @keyframes dribble {
+        from { transform: translateY(0); }
+        to { transform: translateY(11px); }
+      }
+
       .hero-number {
         position: absolute;
         top: 8px;
@@ -504,6 +513,7 @@
         }
 
         keepHeroOnScreen();
+        hero.classList.toggle('walking', heldKeys.has('ArrowLeft') || heldKeys.has('ArrowRight'));
         hero.style.transform = `translate(-50%, ${heroY * -1}px)`;
         collectCoins();
         moveEnemy();
