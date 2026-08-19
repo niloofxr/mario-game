@@ -76,6 +76,91 @@
         --ground-edge: #310e18;
       }
 
+      .scene.level-three {
+        --sky-top: #173d5b;
+        --sky-bottom: #4d9dbc;
+        --ground: #8bd5e8;
+        --ground-edge: #4a9fbd;
+        background: linear-gradient(180deg, var(--sky-top), var(--sky-bottom) 78%);
+      }
+
+      .scene.level-three.arcade {
+        --sky-top: #00133d;
+        --sky-bottom: #0057a8;
+        --ground: #00eaff;
+        --ground-edge: #0066ff;
+      }
+
+      .scene.level-three.dark {
+        --sky-top: #080d24;
+        --sky-bottom: #182b4a;
+        --ground: #34556b;
+        --ground-edge: #172c42;
+      }
+
+      .ice-ceiling {
+        display: none;
+        position: absolute;
+        inset: 0 0 auto;
+        height: 22%;
+        background: transparent;
+      }
+
+      .ice-ceiling::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        height: 22%;
+        background: #e8fbff;
+        clip-path: polygon(0 0, 100% 0, 100% 48%, 94% 76%, 87% 42%, 80% 82%, 72% 45%, 65% 72%, 57% 38%, 49% 78%, 41% 43%, 33% 73%, 25% 40%, 17% 76%, 9% 44%, 0 70%);
+      }
+
+      .ice-ceiling::after {
+        content: "";
+        position: absolute;
+        top: 20%;
+        left: 3%;
+        width: 28px;
+        height: 76px;
+        background: #e8fbff;
+        clip-path: polygon(0 0, 100% 0, 78% 55%, 55% 100%, 35% 56%);
+        box-shadow: 90px 18px #d5f7ff, 180px -8px #effdff, 275px 22px #c7f1ff, 370px -4px #e8fbff, 470px 15px #c7f1ff, 570px -7px #effdff, 670px 20px #d5f7ff, 770px -2px #e8fbff, 870px 17px #c7f1ff;
+      }
+
+      .level-three .ice-ceiling { display: block; }
+      .level-three .ice-ceiling {
+        z-index: 0;
+        pointer-events: none;
+        height: 100%;
+        background: repeating-linear-gradient(90deg, rgba(210, 247, 255, .24) 0 24px, rgba(65, 149, 185, .2) 24px 42px, rgba(239, 253, 255, .18) 42px 66px);
+      }
+      .level-three .cloud { display: none; }
+      .level-three .platform.one { bottom: 43%; left: 16%; background: #d7f7ff; border-color: #75bdd2; }
+      .level-three .platform.two { bottom: 30%; left: 35%; background: #d7f7ff; border-color: #75bdd2; }
+      .level-three .platform.three { bottom: 42%; left: 55%; background: #d7f7ff; border-color: #75bdd2; }
+      .level-three .platform.four { display: block; bottom: 30%; left: 68%; width: 110px; background: #d7f7ff; border-color: #75bdd2; }
+      .level-three .platform::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 12%;
+        width: 12px;
+        height: 28px;
+        background: #d7f7ff;
+        clip-path: polygon(0 0, 100% 0, 52% 100%);
+        box-shadow: 42px 5px #c4effb, 84px -2px #e8fbff;
+      }
+      .level-three.arcade .platform { background: #00aaff; border-color: #bffcff; box-shadow: 0 0 12px #00eaff; }
+      .level-three.arcade .platform::after { background: #bffcff; box-shadow: 42px 5px #00eaff, 84px -2px #72f5ff; }
+      .level-three.arcade .ice-ceiling { background: repeating-linear-gradient(90deg, rgba(0, 234, 255, .3) 0 24px, rgba(0, 71, 170, .3) 24px 42px, rgba(191, 252, 255, .25) 42px 66px); }
+      .level-three.dark .platform { background: #456b82; border-color: #223e57; }
+      .level-three.dark .platform::after { background: #6c9eb8; box-shadow: 42px 5px #527e99, 84px -2px #6c9eb8; }
+      .level-three .enemy { display: block; background: #7b75d8; border-color: #4d4b9a; }
+      .level-three .enemy:not(.two) { bottom: calc(43% + 16px); }
+      .level-three .enemy.two { bottom: calc(42% + 16px); }
+
       .cave-ceiling {
         display: none;
         position: absolute;
@@ -92,7 +177,7 @@
       .level-two .platform.one { bottom: 31%; left: 16%; }
       .level-two .platform.two { bottom: 43%; left: 35%; }
       .level-two .platform.three { bottom: 33%; left: 55%; }
-      .level-two .platform.four { display: block; bottom: 48%; left: 75%; width: 110px; }
+      .level-two .platform.four { display: block; bottom: 48%; left: 68%; width: 110px; }
       .platform.four { display: none; }
       .level-two .coin.one { bottom: 36%; left: 20%; }
       .level-two .coin.two { bottom: 49%; left: 39%; }
@@ -111,7 +196,7 @@
         background: #a92f43;
       }
 
-      .level-two .enemy { display: block; bottom: calc(33% + 16px); }
+      .level-two .enemy:not(.two) { display: block; bottom: calc(33% + 16px); }
 
       .mode-menu {
         position: absolute;
@@ -360,6 +445,7 @@
       <div class="coin five" aria-label="Gold coin"></div>
       <div class="hero" aria-label="Basketball player"><span class="hero-number">5</span></div>
       <div class="enemy" aria-label="Enemy"></div>
+      <div class="enemy two" aria-label="Enemy"></div>
       <div class="flag" aria-label="Finish flag"></div>
       <div class="ground" aria-label="Ground"></div>
       <div class="win-screen" id="win-screen">
@@ -379,7 +465,7 @@
       const scoreDisplay = document.querySelector('#score');
       const livesDisplay = document.querySelector('#lives');
       const flag = document.querySelector('.flag');
-      const enemy = document.querySelector('.enemy');
+      const enemies = [...document.querySelectorAll('.enemy')];
       const winScreen = document.querySelector('#win-screen');
       const resultTitle = document.querySelector('#result-title');
       const playAgain = document.querySelector('#play-again');
@@ -431,8 +517,8 @@
         verticalSpeed = 0;
       }
       let level = 1;
-      let enemyX = 0;
-      let enemyDirection = 1;
+      const enemyX = [0, 0];
+      const enemyDirection = [1, 1];
 
       modeButtons.forEach((button) => {
         button.addEventListener('click', () => {
@@ -482,6 +568,18 @@
             scoreDisplay.textContent = score;
             lives = 3;
             livesDisplay.textContent = lives;
+          } else if (level === 2) {
+            level = 3;
+            scene.classList.remove('level-two');
+            scene.classList.add('level-three');
+            heroX = scene.clientWidth * 0.08;
+            heroY = 0;
+            verticalSpeed = 0;
+            coins.forEach((coin) => { coin.hidden = false; });
+            score = 0;
+            scoreDisplay.textContent = score;
+            lives = 3;
+            livesDisplay.textContent = lives;
           } else {
             won = true;
             winScreen.classList.add('visible');
@@ -490,29 +588,29 @@
       }
 
       function moveEnemy() {
-        if (level !== 2) return;
+        if (level !== 2 && level !== 3) return;
         const sceneRect = scene.getBoundingClientRect();
-        const platformRect = platforms[2].getBoundingClientRect();
-        const platformLeft = platformRect.left - sceneRect.left;
-        const platformRight = platformRect.right - sceneRect.left;
-        const minX = platformLeft + 2;
-        const maxX = platformRight - enemy.offsetWidth - 2;
-        if (enemyX === 0) enemyX = minX;
-        enemyX += enemyDirection * 1.5;
-        if (enemyX >= maxX) {
-          enemyX = maxX;
-          enemyDirection = -1;
-        } else if (enemyX <= minX) {
-          enemyX = minX;
-          enemyDirection = 1;
-        }
-        enemy.style.left = `${enemyX}px`;
         const heroRect = hero.getBoundingClientRect();
-        const enemyRect = enemy.getBoundingClientRect();
-        if (heroRect.left < enemyRect.right && heroRect.right > enemyRect.left &&
-            heroRect.top < enemyRect.bottom && heroRect.bottom > enemyRect.top) {
-          loseLife();
-        }
+        const patrols = level === 2 ? [[2, 0]] : [[0, 0], [2, 1]];
+        patrols.forEach(([platformIndex, enemyIndex]) => {
+          const movingEnemy = enemies[enemyIndex];
+          const platformRect = platforms[platformIndex].getBoundingClientRect();
+          const minX = platformRect.left - sceneRect.left + 2;
+          const maxX = platformRect.right - sceneRect.left - movingEnemy.offsetWidth - 2;
+          if (enemyX[enemyIndex] === 0) enemyX[enemyIndex] = minX;
+          enemyX[enemyIndex] += enemyDirection[enemyIndex] * 1.5;
+          if (enemyX[enemyIndex] >= maxX) {
+            enemyX[enemyIndex] = maxX;
+            enemyDirection[enemyIndex] = -1;
+          } else if (enemyX[enemyIndex] <= minX) {
+            enemyX[enemyIndex] = minX;
+            enemyDirection[enemyIndex] = 1;
+          }
+          movingEnemy.style.left = `${enemyX[enemyIndex]}px`;
+          const enemyRect = movingEnemy.getBoundingClientRect();
+          if (heroRect.left < enemyRect.right && heroRect.right > enemyRect.left &&
+              heroRect.top < enemyRect.bottom && heroRect.bottom > enemyRect.top) loseLife();
+        });
       }
 
       function moveHero() {
