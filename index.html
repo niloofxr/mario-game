@@ -421,6 +421,42 @@
         font-weight: 900;
       }
 
+      .touch-controls {
+        position: absolute;
+        right: 18px;
+        bottom: 18px;
+        left: 18px;
+        z-index: 4;
+        display: none;
+        justify-content: space-between;
+        pointer-events: none;
+      }
+
+      .touch-group { display: flex; gap: 10px; }
+
+      .touch-button {
+        width: 58px;
+        height: 58px;
+        border: 2px solid rgba(255, 255, 255, .75);
+        border-radius: 12px;
+        color: #fff;
+        background: rgba(24, 54, 76, .72);
+        font: 700 25px system-ui, sans-serif;
+        touch-action: none;
+        user-select: none;
+        pointer-events: auto;
+      }
+
+      @media (max-width: 700px) {
+        .mode-menu { top: 10px; left: 10px; gap: 2px; padding: 4px; }
+        .mode-button { padding: 5px 6px; font-size: 10px; }
+        .score { top: 10px; right: 10px; padding: 6px 8px; font-size: 11px; }
+        .touch-controls { display: flex; }
+        .platform { transform: scale(.9); transform-origin: center; }
+        .win-card { padding: 24px 28px; }
+        .win-card h1 { font-size: 32px; }
+      }
+
     </style>
   </head>
   <body>
@@ -448,6 +484,13 @@
       <div class="enemy two" aria-label="Enemy"></div>
       <div class="flag" aria-label="Finish flag"></div>
       <div class="ground" aria-label="Ground"></div>
+      <div class="touch-controls" aria-label="Touch controls">
+        <div class="touch-group">
+          <button class="touch-button" data-key="ArrowLeft" aria-label="Move left">←</button>
+          <button class="touch-button" data-key="ArrowRight" aria-label="Move right">→</button>
+        </div>
+        <button class="touch-button" data-key="Space" aria-label="Jump">↑</button>
+      </div>
       <div class="win-screen" id="win-screen">
         <div class="win-card">
           <h1 id="result-title">YOU WIN!</h1>
@@ -470,6 +513,7 @@
       const resultTitle = document.querySelector('#result-title');
       const playAgain = document.querySelector('#play-again');
       const modeButtons = [...document.querySelectorAll('.mode-button')];
+      const touchButtons = [...document.querySelectorAll('.touch-button')];
       const speed = 5;
       const jumpStrength = 13;
       const gravity = 0.6;
@@ -671,6 +715,21 @@
       });
 
       window.addEventListener('keyup', (event) => heldKeys.delete(event.key));
+      touchButtons.forEach((button) => {
+        const key = button.dataset.key;
+        button.addEventListener('pointerdown', (event) => {
+          event.preventDefault();
+          if (key === 'Space') {
+            if (verticalSpeed === 0) verticalSpeed = jumpStrength;
+          } else {
+            heldKeys.add(key);
+          }
+        });
+        const release = () => heldKeys.delete(key);
+        button.addEventListener('pointerup', release);
+        button.addEventListener('pointercancel', release);
+        button.addEventListener('pointerleave', release);
+      });
       window.addEventListener('resize', keepHeroOnScreen);
       playAgain.addEventListener('click', () => {
         resetGameToLevelOne();
