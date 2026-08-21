@@ -654,7 +654,8 @@
           }
           movingEnemy.style.left = `${enemyX[enemyIndex]}px`;
           const enemyRect = movingEnemy.getBoundingClientRect();
-          if (heroRect.left < enemyRect.right && heroRect.right > enemyRect.left &&
+          if (verticalSpeed <= 0 &&
+              heroRect.left < enemyRect.right && heroRect.right > enemyRect.left &&
               heroRect.top < enemyRect.bottom && heroRect.bottom > enemyRect.top) loseLife();
         });
       }
